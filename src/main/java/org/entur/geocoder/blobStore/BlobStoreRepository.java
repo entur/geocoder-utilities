@@ -16,7 +16,7 @@
  *
  */
 
-package org.entur.geocoder.repositories;
+package org.entur.geocoder.blobStore;
 
 import java.io.InputStream;
 

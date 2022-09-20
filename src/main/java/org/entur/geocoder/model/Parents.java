@@ -14,7 +14,7 @@
  *
  */
 
-package org.entur.geocoder.utilities.model;
+package org.entur.geocoder.model;
 
 import java.util.HashMap;
 import java.util.List;

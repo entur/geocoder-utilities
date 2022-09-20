@@ -1,4 +1,4 @@
-package org.entur.geocoder.utilities.model;
+package org.entur.geocoder.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

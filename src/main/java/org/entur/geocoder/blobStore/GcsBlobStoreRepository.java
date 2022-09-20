@@ -16,7 +16,7 @@
  *
  */
 
-package org.entur.geocoder.repositories;
+package org.entur.geocoder.blobStore;
 
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;

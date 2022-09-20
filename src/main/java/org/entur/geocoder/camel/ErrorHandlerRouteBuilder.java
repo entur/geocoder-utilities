@@ -1,4 +1,4 @@
-package org.entur.geocoder.utilities.camel;
+package org.entur.geocoder.camel;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;

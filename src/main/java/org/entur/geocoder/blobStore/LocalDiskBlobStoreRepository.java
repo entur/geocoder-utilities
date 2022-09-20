@@ -16,8 +16,9 @@
  *
  */
 
-package org.entur.geocoder.repositories;
+package org.entur.geocoder.blobStore;
 
+import org.entur.geocoder.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
@@ -103,7 +103,7 @@ public non-sealed class LocalDiskBlobStoreRepository implements BlobStoreReposit
     public InputStream getLatestBlob(String prefix) {
         if (Paths.get(baseFolder, prefix).toFile().isDirectory()) {
             try (var paths = Files.walk(Paths.get(baseFolder, prefix))) {
-                return paths.filter(LocalDiskBlobStoreRepository::isValidFile).findFirst().map(path -> {
+                return paths.filter(Utilities::isValidFile).findFirst().map(path -> {
                     try {
                         return Files.newInputStream(path);
                     } catch (IOException e) {
@@ -115,14 +115,6 @@ public non-sealed class LocalDiskBlobStoreRepository implements BlobStoreReposit
             }
         }
         return null;
-    }
-
-    private static boolean isValidFile(Path path) {
-        try {
-            return Files.isRegularFile(path) && !Files.isHidden(path);
-        } catch (IOException e) {
-            return false;
-        }
     }
 
     @Override

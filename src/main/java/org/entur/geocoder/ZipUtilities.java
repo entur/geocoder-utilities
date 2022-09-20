@@ -1,4 +1,4 @@
-package org.entur.geocoder.utilities;
+package org.entur.geocoder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,15 +65,15 @@ public final class ZipUtilities {
         logger.info("zipping file {}", outputFilename);
         try {
             var inputBytes = inputStream.readAllBytes();
-            var baos = new ByteArrayOutputStream();
-            var zos = new ZipOutputStream(baos);
+            var outputStream = new ByteArrayOutputStream();
+            var zos = new ZipOutputStream(outputStream);
             var entry = new ZipEntry(outputFilename);
             entry.setSize(inputBytes.length);
             zos.putNextEntry(entry);
             zos.write(inputBytes);
             zos.closeEntry();
             zos.close();
-            return new ByteArrayInputStream(baos.toByteArray());
+            return new ByteArrayInputStream(outputStream.toByteArray());
         } catch (Exception ex) {
             throw new RuntimeException("Failed to add file to zip: " + ex.getMessage(), ex);
         }

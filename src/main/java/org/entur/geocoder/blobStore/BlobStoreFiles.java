@@ -14,7 +14,7 @@
  *
  */
 
-package org.entur.geocoder.repositories;
+package org.entur.geocoder.blobStore;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,19 +45,19 @@ public class BlobStoreFiles {
     public static class File {
         @JsonProperty(required = true)
         private String name;
-        @JsonProperty(required = false)
+        @JsonProperty
         private Date created;
-        @JsonProperty(required = false)
+        @JsonProperty
         private Date updated;
-        @JsonProperty(required = false)
+        @JsonProperty
         private Long fileSize;
-        @JsonProperty(required = false)
+        @JsonProperty
         private String referential;
-        @JsonProperty(required = false)
+        @JsonProperty
         private Long providerId;
-        @JsonProperty(required = false)
+        @JsonProperty
         private Format format;
-        @JsonProperty(required = false)
+        @JsonProperty
         private String url;
 
         public File() {
@@ -149,7 +149,7 @@ public class BlobStoreFiles {
             return "File [name=" + name + ", created=" + created + ", updated=" + updated + ", fileSize=" + fileSize + "]";
         }
 
-        public enum Format {NETEX, GTFS, GRAPH, UNKOWN}
+        public enum Format {NETEX, GTFS, GRAPH, UNKNOWN}
 
     }
 }

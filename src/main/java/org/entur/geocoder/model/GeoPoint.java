@@ -14,26 +14,6 @@
  *
  */
 
-package org.entur.geocoder.utilities.model;
+package org.entur.geocoder.model;
 
-public record AddressParts(
-        String street,
-        String number,
-        String zip
-) {
-    public AddressParts(String street) {
-        this(street, null, null);
-    }
-
-    @Override
-    public String toString() {
-        String toString = "street(" + street + ")";
-        if (number != null) {
-            toString += "|number(" + number + ")";
-        }
-        if (zip != null) {
-            toString += "|zip=(" + zip + ")";
-        }
-        return toString;
-    }
-}
+public record GeoPoint(Double lat, Double lon) {}

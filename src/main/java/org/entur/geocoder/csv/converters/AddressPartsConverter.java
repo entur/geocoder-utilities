@@ -1,8 +1,8 @@
-package org.entur.geocoder;
+package org.entur.geocoder.csv.converters;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import org.entur.geocoder.utilities.model.AddressParts;
+import org.entur.geocoder.model.AddressParts;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

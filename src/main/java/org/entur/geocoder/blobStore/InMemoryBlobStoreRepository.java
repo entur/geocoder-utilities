@@ -16,7 +16,7 @@
  *
  */
 
-package org.entur.geocoder.repositories;
+package org.entur.geocoder.blobStore;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
