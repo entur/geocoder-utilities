@@ -33,6 +33,10 @@ public abstract class BlobStoreService {
         return repository.getBlob(name);
     }
 
+    public BlobStoreFiles listBlobStoreFiles(String name) {
+        return repository.listBlobStoreFiles(name);
+    }
+
     public void uploadBlob(String name, InputStream inputStream) {
         repository.uploadBlob(name, inputStream);
     }

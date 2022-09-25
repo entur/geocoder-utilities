@@ -16,6 +16,10 @@
 
 package org.entur.geocoder.model;
 
+import org.entur.geocoder.camel.ErrorHandlerRouteBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,9 @@ public record Parents(
         String source,
         Map<ParentType, ParentFields> parents
 ) {
+
+    private static final Logger logger = LoggerFactory.getLogger(ErrorHandlerRouteBuilder.class);
+
     public Parents(String source) {
         this(source, new HashMap<>());
     }
@@ -35,24 +42,52 @@ public record Parents(
         return "source(" + source + ")|parents(" + parents.toString() + ")";
     }
 
+    // Will only be used for copying map, since the parentFields is protected.
+    public void addOrReplaceParents(Map<ParentType, ParentFields> parents) {
+        parents.forEach((parentType, parentFields) ->
+                addOrReplaceParent(parentType, parentFields.id(), parentFields.name(), parentFields.abbr()));
+    }
+
     public void addOrReplaceParent(ParentType parentType, String id, String name) {
+        handleUnknownType(parentType);
         parents.compute(parentType, (fldName, fld) -> new ParentFields(source, id, name));
     }
 
     public void addOrReplaceParent(ParentType parentType, String id, String name, String abbreviation) {
+        handleUnknownType(parentType);
         parents.compute(parentType, (fldName, fld) -> new ParentFields(source, id, name, abbreviation));
+    }
+
+    private void handleUnknownType(ParentType parentTypeToAdd) {
+        if (!parentTypeToAdd.equals(ParentType.UNKNOWN) && parents.containsKey(ParentType.UNKNOWN)) {
+            logger.debug("Removing the UNKNOWN parent type, while adding the known parent type " + parentTypeToAdd);
+            parents.remove(ParentType.UNKNOWN);
+        }
+
+        if (parentTypeToAdd.equals(ParentType.UNKNOWN) && !parents.isEmpty()) {
+            logger.debug("Removing the all parent types, while adding the UNKNOWN parent type");
+            parents.clear();
+        }
     }
 
     public void setNameFor(ParentType parentType, String name) {
         parents.computeIfPresent(parentType, (fldName, fields) -> new ParentFields(fields.id(), name, fields.abbr()));
     }
 
-    public Optional<String> idFor(ParentType parentType) {
-        return Optional.ofNullable(parents.get(parentType)).map(ParentFields::id);
+    public String idFor(ParentType parentType) {
+        return Optional.ofNullable(parents.get(parentType)).map(ParentFields::id).orElse(null);
     }
 
-    public Optional<String> nameFor(ParentType parentType) {
-        return Optional.ofNullable(parents.get(parentType)).map(ParentFields::name);
+    public String nameFor(ParentType parentType) {
+        return Optional.ofNullable(parents.get(parentType)).map(ParentFields::name).orElse(null);
+    }
+
+    public boolean hasParentType(ParentType parentType) {
+        return parents.containsKey(parentType);
+    }
+
+    public boolean isOrphan() {
+        return parents.isEmpty();
     }
 
     /**

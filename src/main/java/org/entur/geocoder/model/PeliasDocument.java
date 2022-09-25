@@ -12,19 +12,22 @@ import java.util.Objects;
 import java.util.Set;
 
 public class PeliasDocument {
-
+    // TODO: Add required parameters to the opencsv annotations for the fields that are required for the further services.
+    //  or may be add validations in the isValid function to filter out invalid data.
+    //  Parents and Parents.source should not be null.
+    //  If Source is final then we can mae parents final also. This is auto validation of the above statement.
     private static final Logger logger = LoggerFactory.getLogger(PeliasDocument.class);
 
-    @CsvBindByPosition(position = 0)
+    @CsvBindByPosition(position = 0, required = true)
     private final String index = "pelias";
 
-    @CsvBindByPosition(position = 1)
+    @CsvBindByPosition(position = 1, required = true)
     private final String layer;
 
-    @CsvBindByPosition(position = 2)
+    @CsvBindByPosition(position = 2, required = true)
     private final String source;
 
-    @CsvBindByPosition(position = 3)
+    @CsvBindByPosition(position = 3, required = true)
     private final String sourceId;
 
     @CsvBindByPosition(position = 4)
@@ -36,7 +39,7 @@ public class PeliasDocument {
     @CsvBindByPosition(position = 6)
     private String defaultAlias;
 
-    @CsvBindByPosition(position = 7)
+    @CsvBindByPosition(position = 7, required = true)
     private Long popularity = 1L;
 
     @CsvCustomBindByPosition(position = 8, converter = GeoPointConverter.class)
@@ -45,8 +48,8 @@ public class PeliasDocument {
     @CsvCustomBindByPosition(position = 9, converter = AddressPartsConverter.class)
     private AddressParts addressParts;
 
-    @CsvCustomBindByPosition(position = 10, converter = ParentsConverter.class)
-    private Parents parents;
+    @CsvCustomBindByPosition(position = 10, converter = ParentsConverter.class, required = true)
+    private final Parents parents;
 
     @CsvCustomBindByPosition(position = 11, converter = StringMapConverter.class)
     private final StringMap nameMap = new StringMap();
@@ -73,12 +76,14 @@ public class PeliasDocument {
         this.layer = null;
         this.source = null;
         this.sourceId = null;
+        this.parents = null;
     }
 
     public PeliasDocument(String layer, String source, String sourceId) {
         this.layer = Objects.requireNonNull(layer);
         this.source = Objects.requireNonNull(source);
         this.sourceId = Objects.requireNonNull(sourceId);
+        this.parents = new Parents(source);
     }
 
     public void setPopularity(Long popularity) {
@@ -95,10 +100,6 @@ public class PeliasDocument {
 
     public void setAddressParts(AddressParts addressParts) {
         this.addressParts = addressParts;
-    }
-
-    public void setParents(Parents parents) {
-        this.parents = parents;
     }
 
     public void addCategory(String category) {
@@ -124,6 +125,7 @@ public class PeliasDocument {
     public void addAlias(String language, String alias) {
         aliasMap.put(IsoLanguageCodeMap.getLanguage(language), alias);
     }
+
     public void setDefaultAlias(String defaultAlias) {
         this.defaultAlias = defaultAlias;
     }

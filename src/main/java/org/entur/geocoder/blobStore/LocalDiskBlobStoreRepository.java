@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Date;
@@ -126,10 +127,16 @@ public non-sealed class LocalDiskBlobStoreRepository implements BlobStoreReposit
 
         var blobStoreFiles = new BlobStoreFiles();
         for (var prefix : prefixes) {
-            if (Paths.get(baseFolder, prefix).toFile().isDirectory()) {
-                try (var walk = Files.walk(Paths.get(baseFolder, prefix))) {
-                    var result = walk.filter(Files::isRegularFile)
-                            .map(x -> new BlobStoreFiles.File(Paths.get(baseFolder).relativize(x).toString(), new Date(), new Date(), x.toFile().length())).collect(Collectors.toList());
+            Path path = Paths.get(this.getContainerFolder()).resolve(prefix);
+            if (path.toFile().isDirectory()) {
+                try (var walk = Files.walk(path)) {
+                    var result = walk.filter(Utilities::isValidFile)
+                            .map(x -> new BlobStoreFiles.File(
+                                    Paths.get(this.getContainerFolder()).relativize(x).toString(),
+                                    new Date(),
+                                    new Date(),
+                                    x.toFile().length())
+                            ).collect(Collectors.toList());
                     blobStoreFiles.add(result);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
