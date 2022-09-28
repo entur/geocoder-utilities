@@ -1,8 +1,7 @@
 package org.entur.geocoder.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.opencsv.bean.CsvBindByPosition;
-import com.opencsv.bean.CsvCustomBindByPosition;
+import com.opencsv.bean.*;
 import org.entur.geocoder.csv.converters.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,55 +17,55 @@ public class PeliasDocument {
     //  If Source is final then we can mae parents final also. This is auto validation of the above statement.
     private static final Logger logger = LoggerFactory.getLogger(PeliasDocument.class);
 
-    @CsvBindByPosition(position = 0, required = true)
+    @CsvBindByName(required = true)
     private final String index = "pelias";
 
-    @CsvBindByPosition(position = 1, required = true)
+    @CsvBindByName(required = true)
     private final String layer;
 
-    @CsvBindByPosition(position = 2, required = true)
+    @CsvBindByName(required = true)
     private final String source;
 
-    @CsvBindByPosition(position = 3, required = true)
+    @CsvBindByName(required = true)
     private final String sourceId;
 
-    @CsvBindByPosition(position = 4)
+    @CsvBindByName()
     private String defaultName;
 
-    @CsvBindByPosition(position = 5)
+    @CsvBindByName()
     private String displayName;
 
-    @CsvBindByPosition(position = 6)
+    @CsvBindByName()
     private String defaultAlias;
 
-    @CsvBindByPosition(position = 7, required = true)
+    @CsvBindByName(required = true)
     private Long popularity = 1L;
 
-    @CsvCustomBindByPosition(position = 8, converter = GeoPointConverter.class)
+    @CsvCustomBindByName(converter = GeoPointConverter.class)
     private GeoPoint centerPoint;
 
-    @CsvCustomBindByPosition(position = 9, converter = AddressPartsConverter.class)
+    @CsvCustomBindByName(converter = AddressPartsConverter.class)
     private AddressParts addressParts;
 
-    @CsvCustomBindByPosition(position = 10, converter = ParentsConverter.class, required = true)
+    @CsvCustomBindByName(converter = ParentsConverter.class, required = true)
     private final Parents parents;
 
-    @CsvCustomBindByPosition(position = 11, converter = StringMapConverter.class)
-    private final StringMap nameMap = new StringMap();
+    @CsvCustomBindByName(converter = StringMapConverter.class)
+    private final StringMap alternativeNames = new StringMap();
 
-    @CsvCustomBindByPosition(position = 12, converter = StringMapConverter.class)
+    @CsvCustomBindByName(converter = StringMapConverter.class)
     private final StringMap descriptionMap = new StringMap();
 
-    @CsvCustomBindByPosition(position = 13, converter = StringMapConverter.class)
-    private final StringMap aliasMap = new StringMap();
+    @CsvCustomBindByName(converter = StringMapConverter.class)
+    private final StringMap alternativeAlias = new StringMap();
 
-    @CsvCustomBindByPosition(position = 14, converter = StringListConverter.class)
+    @CsvCustomBindByName(converter = StringListConverter.class)
     private final StringList categories = new StringList();
 
-    @CsvCustomBindByPosition(position = 15, converter = StringListConverter.class)
+    @CsvCustomBindByName(converter = StringListConverter.class)
     private final StringList tariffZones = new StringList();
 
-    @CsvCustomBindByPosition(position = 16, converter = StringListConverter.class)
+    @CsvCustomBindByName(converter = StringListConverter.class)
     private final StringList tariffZoneAuthorities = new StringList();
 
     /**
@@ -110,20 +109,20 @@ public class PeliasDocument {
         this.displayName = displayName;
     }
 
-    public void addName(String language, String name) {
-        nameMap.put(IsoLanguageCodeMap.getLanguage(language), name);
+    public void addAlternativeName(String language, String name) {
+        alternativeNames.put(IsoLanguageCodeMap.getLanguage(language), name);
     }
 
     public Set<Map.Entry<String, String>> namesEntrySet() {
-        return nameMap.entrySet();
+        return alternativeNames.entrySet();
     }
 
     public void addDescription(String language, String description) {
         descriptionMap.put(language, description);
     }
 
-    public void addAlias(String language, String alias) {
-        aliasMap.put(IsoLanguageCodeMap.getLanguage(language), alias);
+    public void addAlternativeAlias(String language, String alias) {
+        alternativeAlias.put(IsoLanguageCodeMap.getLanguage(language), alias);
     }
 
     public void setDefaultAlias(String defaultAlias) {
@@ -182,16 +181,16 @@ public class PeliasDocument {
         return parents;
     }
 
-    public StringMap getNameMap() {
-        return nameMap;
+    public StringMap getAlternativeNames() {
+        return alternativeNames;
     }
 
     public StringMap getDescriptionMap() {
         return descriptionMap;
     }
 
-    public StringMap getAliasMap() {
-        return aliasMap;
+    public StringMap getAlternativeAlias() {
+        return alternativeAlias;
     }
 
     public StringList getCategories() {

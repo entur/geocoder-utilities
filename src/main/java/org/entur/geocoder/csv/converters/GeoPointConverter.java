@@ -2,7 +2,6 @@ package org.entur.geocoder.csv.converters;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.entur.geocoder.model.GeoPoint;
 
 import java.util.regex.Matcher;
