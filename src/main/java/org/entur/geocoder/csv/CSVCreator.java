@@ -22,6 +22,8 @@ public final class CSVCreator {
             Path path = file.toPath();
             try (Writer writer = new FileWriter(path.toString())) {
                 StatefulBeanToCsv<PeliasDocument> sbc = new StatefulBeanToCsvBuilder<PeliasDocument>(writer)
+                        .withQuotechar('\'')
+                        .withEscapechar('\\')
                         .withSeparator(';')
                         .build();
 

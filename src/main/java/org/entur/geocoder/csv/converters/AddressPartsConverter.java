@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class AddressPartsConverter<T, I> extends AbstractBeanField<T, I> {
     @Override
     protected AddressParts convert(String value) throws CsvDataTypeMismatchException {
-        Pattern pattern = Pattern.compile("street\\((?<street>.*?)\\)(?:|number\\((?<number>.*?)\\))?(?:|zip\\((?<zip>.*?)\\))?");
+        Pattern pattern = Pattern.compile("street\\((?<street>.*?)\\)(?<sep>[|])(number\\((?<number>.*?)\\))(\\k<sep>)(zip\\((?<zip>.*?)\\))?");
         Matcher matcher = pattern.matcher(value);
         if(matcher.matches()) {
             return new AddressParts(matcher.group("street"), matcher.group("number"), matcher.group("zip"));

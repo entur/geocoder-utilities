@@ -90,7 +90,9 @@ public class PeliasDocument {
     }
 
     public void setDefaultName(String defaultName) {
-        this.defaultName = defaultName;
+        if (isValidName(defaultName)) {
+            this.defaultName = defaultName;
+        }
     }
 
     public void setCenterPoint(GeoPoint centerPoint) {
@@ -106,11 +108,15 @@ public class PeliasDocument {
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        if (isValidName(defaultName)) {
+            this.displayName = displayName;
+        }
     }
 
     public void addAlternativeName(String language, String name) {
-        alternativeNames.put(IsoLanguageCodeMap.getLanguage(language), name);
+        if (isValidName(name)) {
+            alternativeNames.put(IsoLanguageCodeMap.getLanguage(language), name);
+        }
     }
 
     public Set<Map.Entry<String, String>> namesEntrySet() {
@@ -122,11 +128,15 @@ public class PeliasDocument {
     }
 
     public void addAlternativeAlias(String language, String alias) {
-        alternativeAlias.put(IsoLanguageCodeMap.getLanguage(language), alias);
+        if (isValidName(alias)) {
+            alternativeAlias.put(IsoLanguageCodeMap.getLanguage(language), alias);
+        }
     }
 
     public void setDefaultAlias(String defaultAlias) {
-        this.defaultAlias = defaultAlias;
+        if (isValidName(defaultAlias)) {
+            this.defaultAlias = defaultAlias;
+        }
     }
 
     public void addTariffZone(String tariffZone) {
@@ -203,6 +213,11 @@ public class PeliasDocument {
 
     public StringList getTariffZoneAuthorities() {
         return tariffZoneAuthorities;
+    }
+
+    @JsonIgnore
+    public boolean isValidName(String name) {
+        return name != null && !name.isBlank();
     }
 
     @JsonIgnore

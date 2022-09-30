@@ -23,6 +23,8 @@ public class CSVReader {
             CsvToBean<PeliasDocument> cb = new CsvToBeanBuilder<PeliasDocument>(reader)
                     .withType(PeliasDocument.class)
                     .withSeparator(';')
+                    .withEscapeChar('\\')
+                    .withQuoteChar('\'')
                     .build();
             return cb.stream();
         } catch (Exception ex) {

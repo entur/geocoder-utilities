@@ -37,17 +37,4 @@ public class StringMapConverter<T, I> extends AbstractBeanField<T, I> {
         }
         throw new CsvDataTypeMismatchException("Expected value of type StringMap found " + value.getClass());
     }
-
-
-    public static void main(String[] args) throws CsvDataTypeMismatchException {
-        StringMap stringMap = new StringMap();
-        stringMap.put("k1", "v1");
-        stringMap.put("k2", "v2");
-        stringMap.put("k3", "v3");
-
-        String collect = stringMap.entrySet().stream().map(Objects::toString).collect(Collectors.joining("|"));
-        System.out.println(collect);
-
-        System.out.println(new StringMapConverter<>().convert(collect));
-    }
 }

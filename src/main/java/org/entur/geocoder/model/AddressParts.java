@@ -27,13 +27,6 @@ public record AddressParts(
 
     @Override
     public String toString() {
-        String toString = "street(" + street + ")";
-        if (number != null) {
-            toString += "|number(" + number + ")";
-        }
-        if (zip != null) {
-            toString += "|zip=(" + zip + ")";
-        }
-        return toString;
+        return "street(" + street + ")|number(" + number + ")|zip(" + zip + ")";
     }
 }
