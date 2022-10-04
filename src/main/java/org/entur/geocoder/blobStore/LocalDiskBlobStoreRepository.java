@@ -52,6 +52,10 @@ public non-sealed class LocalDiskBlobStoreRepository implements BlobStoreReposit
         return baseFolder + File.separator + containerName;
     }
 
+    private String prependBasePath(String containerName) {
+        return baseFolder + File.separator + containerName;
+    }
+
     @Override
     public boolean existBlob(String objectName) {
         LOGGER.debug("existBlob called in local-disk blob store on {}", objectName);
@@ -102,8 +106,8 @@ public non-sealed class LocalDiskBlobStoreRepository implements BlobStoreReposit
 
     @Override
     public InputStream getLatestBlob(String prefix) {
-        if (Paths.get(baseFolder, prefix).toFile().isDirectory()) {
-            try (var paths = Files.walk(Paths.get(baseFolder, prefix))) {
+        if (Paths.get(getContainerFolder(), prefix).toFile().isDirectory()) {
+            try (var paths = Files.walk(Paths.get(getContainerFolder(), prefix))) {
                 return paths.filter(Utilities::isValidFile).findFirst().map(path -> {
                     try {
                         return Files.newInputStream(path);
@@ -145,5 +149,26 @@ public non-sealed class LocalDiskBlobStoreRepository implements BlobStoreReposit
 
         }
         return blobStoreFiles;
+    }
+
+    @Override
+    public void copyBlob(String sourceObjectName, String targetFolder, String targetObjectName) {
+        Path sourceLocalPath = Paths.get(sourceObjectName);
+        Path sourceFullPath = Paths.get(getContainerFolder()).resolve(sourceLocalPath);
+        Path targetLocalPath = Paths.get(targetObjectName);
+        Path targetFullPath = Paths.get(prependBasePath(targetFolder)).resolve(targetLocalPath);
+        try {
+
+            // create target parent directories if missing
+            Path parentDirectory = targetLocalPath.getParent();
+            Path folder = parentDirectory == null ? Paths.get(targetFolder) : Paths.get(targetFolder).resolve(parentDirectory);
+            Files.createDirectories(folder);
+
+            Files.deleteIfExists(targetFullPath);
+
+            Files.copy(sourceFullPath, targetFullPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

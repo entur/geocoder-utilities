@@ -15,7 +15,7 @@
         <camel.version>3.18.1</camel.version>
         <entur.helpers.version>1.0.70</entur.helpers.version>
         <jackson-annotations.version>2.13.4</jackson-annotations.version>
-        <google-cloud-storage.version>2.11.3</google-cloud-storage.version>
+        <google-cloud-storage.version>2.12.0</google-cloud-storage.version>
     </properties>
 
     <scm>

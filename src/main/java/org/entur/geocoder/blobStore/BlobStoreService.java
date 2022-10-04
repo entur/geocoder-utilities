@@ -44,4 +44,8 @@ public abstract class BlobStoreService {
     public InputStream findLatestBlob(String prefix) {
         return repository.getLatestBlob(prefix);
     }
+
+    public void copyBlob(String sourceName, String targetBucket, String targetName) {
+        repository.copyBlob(sourceName, targetBucket, targetName);
+    }
 }
