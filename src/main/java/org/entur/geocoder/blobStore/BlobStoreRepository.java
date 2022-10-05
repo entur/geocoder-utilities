@@ -46,4 +46,6 @@ public sealed interface BlobStoreRepository permits GcsBlobStoreRepository, InMe
     void uploadBlob(String objectName, InputStream inputStream);
 
     void setBucketName(String bucketName);
+
+    void copyBlob(String sourceObjectName, String targetContainerName, String targetObjectName);
 }

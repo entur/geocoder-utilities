@@ -93,6 +93,12 @@ public non-sealed class InMemoryBlobStoreRepository implements BlobStoreReposito
     }
 
     @Override
+    public void copyBlob(String sourceObjectName, String targetContainerName, String targetObjectName) {
+        Map<String, byte[]> sourceData = blobsInContainers.get(containerName);
+        blobsInContainers.get(targetContainerName).put(targetObjectName, sourceData.get(sourceObjectName));
+    }
+
+    @Override
     public BlobStoreFiles listBlobStoreFiles(String prefix) {
         return listBlobs(List.of(prefix));
     }
@@ -107,4 +113,6 @@ public non-sealed class InMemoryBlobStoreRepository implements BlobStoreReposito
         blobStoreFiles.add(files);
         return blobStoreFiles;
     }
+
+
 }

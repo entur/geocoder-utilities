@@ -20,6 +20,7 @@ package org.entur.geocoder.blobStore;
 
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import org.rutebanken.helper.gcp.BlobStoreHelper;
 
@@ -93,5 +94,15 @@ public non-sealed class GcsBlobStoreRepository implements BlobStoreRepository {
             }
         }
         return file;
+    }
+
+    @Override
+    public void copyBlob(String sourceObjectName, String targetContainerName, String targetObjectName) {
+        Storage.CopyRequest request =
+                Storage.CopyRequest.newBuilder()
+                        .setSource(BlobId.of(bucketName, sourceObjectName))
+                        .setTarget(BlobId.of(targetContainerName, targetObjectName), Collections.emptyList())
+                        .build();
+        storage.copy(request).getResult();
     }
 }
