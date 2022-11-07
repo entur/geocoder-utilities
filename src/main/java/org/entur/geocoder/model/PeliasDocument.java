@@ -32,6 +32,7 @@ public class PeliasDocument {
     @CsvBindByName()
     private String defaultName;
 
+    // TODO: Trenger vi display name ????
     @CsvBindByName()
     private String displayName;
 
@@ -90,7 +91,7 @@ public class PeliasDocument {
     }
 
     public void setDefaultName(String defaultName) {
-        if (isValidName(defaultName)) {
+        if (isValidString(defaultName)) {
             this.defaultName = defaultName;
         }
     }
@@ -108,14 +109,14 @@ public class PeliasDocument {
     }
 
     public void setDisplayName(String displayName) {
-        if (isValidName(defaultName)) {
+        if (isValidString(defaultName)) {
             this.displayName = displayName;
         }
     }
 
     public void addAlternativeName(String language, String name) {
-        if (isValidName(name)) {
-            alternativeNames.put(IsoLanguageCodeMap.getLanguage(language), name);
+        if (isValidString(language) && isValidString(name)) {
+            alternativeNames.put(Iso3LanguageCodeMap.getTwoLetterCodeOrDefault(language), name);
         }
     }
 
@@ -128,13 +129,13 @@ public class PeliasDocument {
     }
 
     public void addAlternativeAlias(String language, String alias) {
-        if (isValidName(alias)) {
-            alternativeAlias.put(IsoLanguageCodeMap.getLanguage(language), alias);
+        if (isValidString(language) && isValidString(alias)) {
+            alternativeAlias.put(Iso3LanguageCodeMap.getTwoLetterCodeOrDefault(language), alias);
         }
     }
 
     public void setDefaultAlias(String defaultAlias) {
-        if (isValidName(defaultAlias)) {
+        if (isValidString(defaultAlias)) {
             this.defaultAlias = defaultAlias;
         }
     }
@@ -216,7 +217,7 @@ public class PeliasDocument {
     }
 
     @JsonIgnore
-    public boolean isValidName(String name) {
+    public boolean isValidString(String name) {
         return name != null && !name.isBlank();
     }
 

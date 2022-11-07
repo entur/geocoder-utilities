@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class IsoLanguageCodeMap {
+public class Iso3LanguageCodeMap {
     private static final Map<String, Locale> isoLanguageCodeMap;
 
-    public static String getLanguage(String iso3Code) {
-        return isoLanguageCodeMap.get(iso3Code).getLanguage();
+    public static String getTwoLetterCodeOrDefault(String iso3Code) {
+        if (isoLanguageCodeMap.get(iso3Code) != null) {
+            return isoLanguageCodeMap.get(iso3Code).getLanguage();
+        }
+        return iso3Code;
     }
 
     static {
