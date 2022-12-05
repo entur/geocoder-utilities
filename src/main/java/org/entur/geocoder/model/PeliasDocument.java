@@ -87,7 +87,9 @@ public class PeliasDocument {
     }
 
     public void setPopularity(Long popularity) {
-        this.popularity = popularity;
+        if (popularity != null) {
+            this.popularity = popularity;
+        }
     }
 
     public void setDefaultName(String defaultName) {
