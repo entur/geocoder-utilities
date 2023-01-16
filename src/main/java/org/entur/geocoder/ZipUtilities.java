@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -56,8 +57,8 @@ public final class ZipUtilities {
                 zipEntry = zis.getNextEntry();
             }
             zis.closeEntry();
-        } catch (IOException ioE) {
-            throw new RuntimeException("Unzipping archive failed: " + ioE.getMessage(), ioE);
+        } catch (Exception ex) {
+            throw new RuntimeException("Unzipping archive failed: ", ex);
         }
     }
 
@@ -75,7 +76,38 @@ public final class ZipUtilities {
             zos.close();
             return new ByteArrayInputStream(outputStream.toByteArray());
         } catch (Exception ex) {
-            throw new RuntimeException("Failed to add file to zip: " + ex.getMessage(), ex);
+            throw new RuntimeException("Failed to add file to zip: ", ex);
+        }
+    }
+
+    public static ByteArrayInputStream zipFiles(List<InputStream> inputStreams, String outputFilename) {
+        try {
+            var outputStream = new ByteArrayOutputStream();
+            var zos = new ZipOutputStream(outputStream);
+
+            for (int i = 0; i < inputStreams.size(); i++) {
+
+                // Start writing a new file entry
+                // Prefixing the zip entry filename, if there are multiple file.
+                zos.putNextEntry(
+                        new ZipEntry(i == 0
+                                ? outputFilename
+                                : i + "_" + outputFilename)
+                );
+
+                int length;
+                byte[] buffer = new byte[1024];
+                while ((length = inputStreams.get(i).read(buffer)) > 0) {
+                    zos.write(buffer, 0, length);
+                }
+                // current file entry is written and current zip entry is closed
+                zos.closeEntry();
+            }
+
+            zos.close();
+            return new ByteArrayInputStream(outputStream.toByteArray());
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to add files to zip: ", ex);
         }
     }
 }
