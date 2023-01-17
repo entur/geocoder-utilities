@@ -63,7 +63,7 @@ public non-sealed class GcsBlobStoreRepository implements BlobStoreRepository {
     public InputStream getLatestBlob(String prefix) {
         Iterable<Blob> blobIterable = () -> BlobStoreHelper.listAllBlobsRecursively(storage, bucketName, prefix);
         return StreamSupport.stream(blobIterable.spliterator(), false)
-                .min(Comparator.comparing(Blob::getUpdateTimeOffsetDateTime))
+                .min(Comparator.comparing(Blob::getUpdateTime))
                 .map(blob -> getBlob(blob.getName()))
                 .orElseThrow();
     }
