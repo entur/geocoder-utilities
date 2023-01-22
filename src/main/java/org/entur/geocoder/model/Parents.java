@@ -9,36 +9,33 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public record Parents(
-        String source,
-        Map<ParentType, ParentFields> parents
-) {
+public record Parents(Map<ParentType, ParentFields> parents) {
 
     private static final Logger logger = LoggerFactory.getLogger(Parents.class);
 
-    public Parents(String source) {
-        this(source, new HashMap<>());
+    public Parents() {
+        this(new HashMap<>());
     }
 
     @Override
     public String toString() {
-        return "source(" + source + ")|parents(" + parents.toString() + ")";
+        return "parents(" + parents.toString() + ")";
     }
 
     // Will only be used for copying map, since the parentFields is protected.
     public void addOrReplaceParents(Map<ParentType, ParentFields> parents) {
         parents.forEach((parentType, parentFields) ->
-                addOrReplaceParent(parentType, parentFields.id(), parentFields.name(), parentFields.abbr()));
+                addOrReplaceParent(parentType, parentFields.peliasId(), parentFields.name(), parentFields.abbr()));
     }
 
-    public void addOrReplaceParent(ParentType parentType, String id, String name) {
+    public void addOrReplaceParent(ParentType parentType, PeliasId peliasId, String name) {
         handleUnknownType(parentType);
-        parents.compute(parentType, (fldName, fld) -> new ParentFields(source, id, name));
+        parents.compute(parentType, (fldName, fld) -> new ParentFields(peliasId, name));
     }
 
-    public void addOrReplaceParent(ParentType parentType, String id, String name, String abbreviation) {
+    public void addOrReplaceParent(ParentType parentType, PeliasId peliasId, String name, String abbreviation) {
         handleUnknownType(parentType);
-        parents.compute(parentType, (fldName, fld) -> new ParentFields(source, id, name, abbreviation));
+        parents.compute(parentType, (fldName, fld) -> new ParentFields(peliasId, name, abbreviation));
     }
 
     private void handleUnknownType(ParentType parentTypeToAdd) {
@@ -54,11 +51,11 @@ public record Parents(
     }
 
     public void setNameFor(ParentType parentType, String name) {
-        parents.computeIfPresent(parentType, (fldName, fields) -> new ParentFields(fields.id(), name, fields.abbr()));
+        parents.computeIfPresent(parentType, (fldName, fields) -> new ParentFields(fields.peliasId(), name, fields.abbr()));
     }
 
-    public String idFor(ParentType parentType) {
-        return Optional.ofNullable(parents.get(parentType)).map(ParentFields::id).orElse(null);
+    public PeliasId idFor(ParentType parentType) {
+        return Optional.ofNullable(parents.get(parentType)).map(ParentFields::peliasId).orElse(null);
     }
 
     public String nameFor(ParentType parentType) {
@@ -71,16 +68,5 @@ public record Parents(
 
     public boolean isOrphan() {
         return parents.isEmpty();
-    }
-
-    /**
-     * See the following comment to learn why we need to do this.
-     * https://github.com/pelias/csv-importer/pull/97#issuecomment-1203920795
-     */
-    public static Map<ParentType, List<ParentFields>> wrapValidParentFieldsInLists(Map<ParentType, ParentFields> parentFields) {
-        return parentFields.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().isValid())
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> List.of(entry.getValue())));
     }
 }

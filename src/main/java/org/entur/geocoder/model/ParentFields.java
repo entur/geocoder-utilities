@@ -1,21 +1,27 @@
 package org.entur.geocoder.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.entur.geocoder.Utilities;
 
-record ParentFields(String source, String id, String name, String abbr) {
+import java.util.Objects;
 
-    public ParentFields(String source, String id, String name) {
-        this(source, id, name, null);
+public record ParentFields(
+        PeliasId peliasId,
+        String name,
+        String abbr) {
+
+    public ParentFields(PeliasId peliasId, String name, String abbr) {
+        this.peliasId = Objects.requireNonNull(peliasId);
+        this.name = Utilities.requiredValidString(name);
+        this.abbr = abbr;
     }
 
-    @JsonIgnore
-    public boolean isValid() {
-        return this.id != null && !this.id.isBlank() && this.name != null && !this.name.isBlank();
+    public ParentFields(PeliasId peliasId, String name) {
+        this(peliasId, name, null);
     }
 
     @Override
     public String toString() {
-        String toString = "[source(" + source + ")|id(" + id + ")|name(" + name + ")";
+        String toString = "[peliasId(" + peliasId + ")|name(" + name + ")";
         if (abbr != null) {
             toString += "|abbr(" + abbr + ")";
         }

@@ -13,4 +13,15 @@ public class Utilities {
             return false;
         }
     }
+
+    public static boolean isValidString(String string) {
+        return string != null && !string.isBlank();
+    }
+
+    public static String requiredValidString(String string) {
+        if (!isValidString(string)) {
+            throw new IllegalArgumentException("Required non blank value");
+        }
+        return string;
+    }
 }

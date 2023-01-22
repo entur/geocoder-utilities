@@ -1,7 +1,5 @@
 package org.entur.geocoder.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum ParentType {
     COUNTRY("country"),
     COUNTY("county"),
@@ -16,7 +14,6 @@ public enum ParentType {
         this.value = value;
     }
 
-    @JsonValue
     public String value() {
         return value;
     }
