@@ -1,23 +1,4 @@
-/*
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by
- * the European Commission - subsequent versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
- *
- *   https://joinup.ec.europa.eu/software/page/eupl
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and
- * limitations under the Licence.
- *
- */
-
 package org.entur.geocoder.blobStore;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,8 +8,7 @@ import java.util.List;
 
 public class BlobStoreFiles {
 
-    @JsonProperty("files")
-    private List<File> files = new ArrayList<>();
+    private final List<File> files = new ArrayList<>();
 
     public void add(File file) {
         files.add(file);
@@ -43,25 +23,14 @@ public class BlobStoreFiles {
     }
 
     public static class File {
-        @JsonProperty(required = true)
         private String name;
-        @JsonProperty
         private Date created;
-        @JsonProperty
         private Date updated;
-        @JsonProperty
         private Long fileSize;
-        @JsonProperty
         private String referential;
-        @JsonProperty
         private Long providerId;
-        @JsonProperty
         private Format format;
-        @JsonProperty
         private String url;
-
-        public File() {
-        }
 
         public File(String name, Date created, Date updated, Long fileSize) {
             super();
@@ -135,7 +104,6 @@ public class BlobStoreFiles {
             this.providerId = providerId;
         }
 
-        @JsonIgnore
         public String getFileNameOnly() {
             if (name == null || name.endsWith("/")) {
                 return null;

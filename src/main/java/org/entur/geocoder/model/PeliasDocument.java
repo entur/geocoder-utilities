@@ -1,40 +1,22 @@
 package org.entur.geocoder.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opencsv.bean.*;
 import org.entur.geocoder.csv.converters.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
-public class PeliasDocument {
-    // TODO: Add required parameters to the opencsv annotations for the fields that are required for the further services.
-    //  or may be add validations in the isValid function to filter out invalid data.
-    //  Parents and Parents.source should not be null.
-    //  If Source is final then we can mae parents final also. This is auto validation of the above statement.
-    private static final Logger logger = LoggerFactory.getLogger(PeliasDocument.class);
+import static org.entur.geocoder.Utilities.isValidString;
 
+public class PeliasDocument {
     @CsvBindByName(required = true)
     private final String index = "pelias";
 
-    @CsvBindByName(required = true)
-    private final String layer;
-
-    @CsvBindByName(required = true)
-    private final String source;
-
-    @CsvBindByName(required = true)
-    private final String sourceId;
+    @CsvCustomBindByName(converter = PeliasIdConverter.class, required = true)
+    private PeliasId peliasId;
 
     @CsvBindByName()
     private String defaultName;
-
-    // TODO: Trenger vi display name ????
-    @CsvBindByName()
-    private String displayName;
 
     @CsvBindByName()
     private String defaultAlias;
@@ -73,17 +55,13 @@ public class PeliasDocument {
      * No Arguments' constructor for opencsv.
      */
     public PeliasDocument() {
-        this.layer = null;
-        this.source = null;
-        this.sourceId = null;
+        this.peliasId = null;
         this.parents = null;
     }
 
-    public PeliasDocument(String layer, String source, String sourceId) {
-        this.layer = Objects.requireNonNull(layer);
-        this.source = Objects.requireNonNull(source);
-        this.sourceId = Objects.requireNonNull(sourceId);
-        this.parents = new Parents(source);
+    public PeliasDocument(PeliasId peliasId) {
+        this.peliasId = peliasId;
+        this.parents = new Parents();
     }
 
     public void setPopularity(Long popularity) {
@@ -108,12 +86,6 @@ public class PeliasDocument {
 
     public void addCategory(String category) {
         this.categories.add(category);
-    }
-
-    public void setDisplayName(String displayName) {
-        if (isValidString(defaultName)) {
-            this.displayName = displayName;
-        }
     }
 
     public void addAlternativeName(String language, String name) {
@@ -154,24 +126,12 @@ public class PeliasDocument {
         return index;
     }
 
-    public String getLayer() {
-        return layer;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getSourceId() {
-        return sourceId;
+    public PeliasId getPeliasId() {
+        return peliasId;
     }
 
     public String getDefaultName() {
         return defaultName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 
     public String getDefaultAlias() {
@@ -216,20 +176,5 @@ public class PeliasDocument {
 
     public StringList getTariffZoneAuthorities() {
         return tariffZoneAuthorities;
-    }
-
-    @JsonIgnore
-    public boolean isValidString(String name) {
-        return name != null && !name.isBlank();
-    }
-
-    @JsonIgnore
-    public boolean isValid() {
-
-        if (centerPoint == null) {
-            logger.debug("Removing invalid document where geometry is missing:" + this);
-            return false;
-        }
-        return true;
     }
 }

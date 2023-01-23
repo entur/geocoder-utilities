@@ -18,12 +18,4 @@ public class GeoPointConverter<T, I> extends AbstractBeanField<T, I> {
             throw new CsvDataTypeMismatchException("Conversion of [" + value + "] to GeoPoint failed.");
         }
     }
-
-    @Override
-    protected String convertToWrite(Object value) throws CsvDataTypeMismatchException {
-        if (value instanceof GeoPoint geoPoint) {
-            return "lat(" + geoPoint.lat() + ")|lon(" + geoPoint.lon() + ")";
-        }
-        throw new CsvDataTypeMismatchException("Expected value of type GeoPoint found " + value.getClass());
-    }
 }
