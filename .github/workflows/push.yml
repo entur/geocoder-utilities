@@ -42,6 +42,7 @@ jobs:
       - name: Run maven build
         run: mvn package -s .github/workflows/settings.xml -PprettierCheck -Dprettier.nodePath=node -Dprettier.npmPath=npm
       - name: Sonar Scan
+        if: github.repository_owner == 'entur' && github.ref == 'refs/heads/master'
         env:
           SONAR_TOKEN: ${{ secrets.ENTUR_SONAR_PASSWORD }}
           SONAR_PROJECT_NAME: ${{ github.event.repository.name }}
