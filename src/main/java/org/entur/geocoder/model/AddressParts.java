@@ -16,17 +16,13 @@
 
 package org.entur.geocoder.model;
 
-public record AddressParts(
-        String street,
-        String number,
-        String zip
-) {
-    public AddressParts(String street) {
-        this(street, null, null);
-    }
+public record AddressParts(String street, String number, String zip) {
+  public AddressParts(String street) {
+    this(street, null, null);
+  }
 
-    @Override
-    public String toString() {
-        return "street(" + street + ")|number(" + number + ")|zip(" + zip + ")";
-    }
+  @Override
+  public String toString() {
+    return "street(" + street + ")|number(" + number + ")|zip(" + zip + ")";
+  }
 }
