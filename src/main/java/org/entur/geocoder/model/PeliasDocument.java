@@ -1,180 +1,186 @@
 package org.entur.geocoder.model;
 
-import com.opencsv.bean.*;
-import org.entur.geocoder.csv.converters.*;
-
-import java.util.Map;
-import java.util.Set;
-
 import static org.entur.geocoder.Utilities.isValidString;
 
+import com.opencsv.bean.*;
+import java.util.Map;
+import java.util.Set;
+import org.entur.geocoder.csv.converters.*;
+
 public class PeliasDocument {
-    @CsvBindByName(required = true)
-    private final String index = "pelias";
 
-    @CsvCustomBindByName(converter = PeliasIdConverter.class, required = true)
-    private PeliasId peliasId;
+  @CsvBindByName(required = true)
+  private final String index = "pelias";
 
-    @CsvBindByName()
-    private String defaultName;
+  @CsvCustomBindByName(converter = PeliasIdConverter.class, required = true)
+  private PeliasId peliasId;
 
-    @CsvBindByName()
-    private String defaultAlias;
+  @CsvBindByName
+  private String defaultName;
 
-    @CsvBindByName(required = true)
-    private Long popularity = 1L;
+  @CsvBindByName
+  private String defaultAlias;
 
-    @CsvCustomBindByName(converter = GeoPointConverter.class)
-    private GeoPoint centerPoint;
+  @CsvBindByName(required = true)
+  private Long popularity = 1L;
 
-    @CsvCustomBindByName(converter = AddressPartsConverter.class)
-    private AddressParts addressParts;
+  @CsvCustomBindByName(converter = GeoPointConverter.class)
+  private GeoPoint centerPoint;
 
-    @CsvCustomBindByName(converter = ParentsConverter.class, required = true)
-    private final Parents parents;
+  @CsvCustomBindByName(converter = AddressPartsConverter.class)
+  private AddressParts addressParts;
 
-    @CsvCustomBindByName(converter = StringMapConverter.class)
-    private final StringMap alternativeNames = new StringMap();
+  @CsvCustomBindByName(converter = ParentsConverter.class, required = true)
+  private final Parents parents;
 
-    @CsvCustomBindByName(converter = StringMapConverter.class)
-    private final StringMap descriptionMap = new StringMap();
+  @CsvCustomBindByName(converter = StringMapConverter.class)
+  private final StringMap alternativeNames = new StringMap();
 
-    @CsvCustomBindByName(converter = StringMapConverter.class)
-    private final StringMap alternativeAlias = new StringMap();
+  @CsvCustomBindByName(converter = StringMapConverter.class)
+  private final StringMap descriptionMap = new StringMap();
 
-    @CsvCustomBindByName(converter = StringListConverter.class)
-    private final StringList categories = new StringList();
+  @CsvCustomBindByName(converter = StringMapConverter.class)
+  private final StringMap alternativeAlias = new StringMap();
 
-    @CsvCustomBindByName(converter = StringListConverter.class)
-    private final StringList tariffZones = new StringList();
+  @CsvCustomBindByName(converter = StringListConverter.class)
+  private final StringList categories = new StringList();
 
-    @CsvCustomBindByName(converter = StringListConverter.class)
-    private final StringList tariffZoneAuthorities = new StringList();
+  @CsvCustomBindByName(converter = StringListConverter.class)
+  private final StringList tariffZones = new StringList();
 
-    /**
-     * No Arguments' constructor for opencsv.
-     */
-    public PeliasDocument() {
-        this.peliasId = null;
-        this.parents = null;
+  @CsvCustomBindByName(converter = StringListConverter.class)
+  private final StringList tariffZoneAuthorities = new StringList();
+
+  /**
+   * No Arguments' constructor for opencsv.
+   */
+  public PeliasDocument() {
+    this.peliasId = null;
+    this.parents = null;
+  }
+
+  public PeliasDocument(PeliasId peliasId) {
+    this.peliasId = peliasId;
+    this.parents = new Parents();
+  }
+
+  public void setPopularity(Long popularity) {
+    if (popularity != null) {
+      this.popularity = popularity;
     }
+  }
 
-    public PeliasDocument(PeliasId peliasId) {
-        this.peliasId = peliasId;
-        this.parents = new Parents();
+  public void setDefaultName(String defaultName) {
+    if (isValidString(defaultName)) {
+      this.defaultName = defaultName;
     }
+  }
 
-    public void setPopularity(Long popularity) {
-        if (popularity != null) {
-            this.popularity = popularity;
-        }
-    }
+  public void setCenterPoint(GeoPoint centerPoint) {
+    this.centerPoint = centerPoint;
+  }
 
-    public void setDefaultName(String defaultName) {
-        if (isValidString(defaultName)) {
-            this.defaultName = defaultName;
-        }
-    }
+  public void setAddressParts(AddressParts addressParts) {
+    this.addressParts = addressParts;
+  }
 
-    public void setCenterPoint(GeoPoint centerPoint) {
-        this.centerPoint = centerPoint;
-    }
+  public void addCategory(String category) {
+    this.categories.add(category);
+  }
 
-    public void setAddressParts(AddressParts addressParts) {
-        this.addressParts = addressParts;
+  public void addAlternativeName(String language, String name) {
+    if (isValidString(language) && isValidString(name)) {
+      alternativeNames.put(
+        Iso3LanguageCodeMap.getTwoLetterCodeOrDefault(language),
+        name
+      );
     }
+  }
 
-    public void addCategory(String category) {
-        this.categories.add(category);
-    }
+  public Set<Map.Entry<String, String>> namesEntrySet() {
+    return alternativeNames.entrySet();
+  }
 
-    public void addAlternativeName(String language, String name) {
-        if (isValidString(language) && isValidString(name)) {
-            alternativeNames.put(Iso3LanguageCodeMap.getTwoLetterCodeOrDefault(language), name);
-        }
-    }
+  public void addDescription(String language, String description) {
+    descriptionMap.put(language, description);
+  }
 
-    public Set<Map.Entry<String, String>> namesEntrySet() {
-        return alternativeNames.entrySet();
+  public void addAlternativeAlias(String language, String alias) {
+    if (isValidString(language) && isValidString(alias)) {
+      alternativeAlias.put(
+        Iso3LanguageCodeMap.getTwoLetterCodeOrDefault(language),
+        alias
+      );
     }
+  }
 
-    public void addDescription(String language, String description) {
-        descriptionMap.put(language, description);
+  public void setDefaultAlias(String defaultAlias) {
+    if (isValidString(defaultAlias)) {
+      this.defaultAlias = defaultAlias;
     }
+  }
 
-    public void addAlternativeAlias(String language, String alias) {
-        if (isValidString(language) && isValidString(alias)) {
-            alternativeAlias.put(Iso3LanguageCodeMap.getTwoLetterCodeOrDefault(language), alias);
-        }
-    }
+  public void addTariffZone(String tariffZone) {
+    this.tariffZones.add(tariffZone);
+  }
 
-    public void setDefaultAlias(String defaultAlias) {
-        if (isValidString(defaultAlias)) {
-            this.defaultAlias = defaultAlias;
-        }
-    }
+  public void addTariffZoneAuthority(String tariffZoneAuthority) {
+    this.tariffZoneAuthorities.add(tariffZoneAuthority);
+  }
 
-    public void addTariffZone(String tariffZone) {
-        this.tariffZones.add(tariffZone);
-    }
+  public String getIndex() {
+    return index;
+  }
 
-    public void addTariffZoneAuthority(String tariffZoneAuthority) {
-        this.tariffZoneAuthorities.add(tariffZoneAuthority);
-    }
+  public PeliasId getPeliasId() {
+    return peliasId;
+  }
 
-    public String getIndex() {
-        return index;
-    }
+  public String getDefaultName() {
+    return defaultName;
+  }
 
-    public PeliasId getPeliasId() {
-        return peliasId;
-    }
+  public String getDefaultAlias() {
+    return defaultAlias;
+  }
 
-    public String getDefaultName() {
-        return defaultName;
-    }
+  public Long getPopularity() {
+    return popularity;
+  }
 
-    public String getDefaultAlias() {
-        return defaultAlias;
-    }
+  public GeoPoint getCenterPoint() {
+    return centerPoint;
+  }
 
-    public Long getPopularity() {
-        return popularity;
-    }
+  public AddressParts getAddressParts() {
+    return addressParts;
+  }
 
-    public GeoPoint getCenterPoint() {
-        return centerPoint;
-    }
+  public Parents getParents() {
+    return parents;
+  }
 
-    public AddressParts getAddressParts() {
-        return addressParts;
-    }
+  public StringMap getAlternativeNames() {
+    return alternativeNames;
+  }
 
-    public Parents getParents() {
-        return parents;
-    }
+  public StringMap getDescriptionMap() {
+    return descriptionMap;
+  }
 
-    public StringMap getAlternativeNames() {
-        return alternativeNames;
-    }
+  public StringMap getAlternativeAlias() {
+    return alternativeAlias;
+  }
 
-    public StringMap getDescriptionMap() {
-        return descriptionMap;
-    }
+  public StringList getCategories() {
+    return categories;
+  }
 
-    public StringMap getAlternativeAlias() {
-        return alternativeAlias;
-    }
+  public StringList getTariffZones() {
+    return tariffZones;
+  }
 
-    public StringList getCategories() {
-        return categories;
-    }
-
-    public StringList getTariffZones() {
-        return tariffZones;
-    }
-
-    public StringList getTariffZoneAuthorities() {
-        return tariffZoneAuthorities;
-    }
+  public StringList getTariffZoneAuthorities() {
+    return tariffZoneAuthorities;
+  }
 }

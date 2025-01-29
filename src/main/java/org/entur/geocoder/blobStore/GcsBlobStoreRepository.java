@@ -22,87 +22,119 @@ import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import org.rutebanken.helper.gcp.BlobStoreHelper;
-
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.StreamSupport;
+import org.rutebanken.helper.gcp.BlobStoreHelper;
 
 /**
  * Blob store targeting Google Cloud Storage.
  */
 public non-sealed class GcsBlobStoreRepository implements BlobStoreRepository {
 
-    private final Storage storage;
-    private String bucketName;
+  private final Storage storage;
+  private String bucketName;
 
-    public GcsBlobStoreRepository(Storage storage) {
-        this.storage = storage;
+  public GcsBlobStoreRepository(Storage storage) {
+    this.storage = storage;
+  }
+
+  public void setBucketName(String bucketName) {
+    this.bucketName = bucketName;
+  }
+
+  @Override
+  public boolean existBlob(String objectName) {
+    return BlobStoreHelper.existBlob(storage, bucketName, objectName);
+  }
+
+  @Override
+  public InputStream getBlob(String name) {
+    return BlobStoreHelper.getBlob(storage, bucketName, name);
+  }
+
+  @Override
+  public void uploadBlob(String name, InputStream inputStream) {
+    BlobStoreHelper.uploadBlobWithRetry(
+      storage,
+      bucketName,
+      name,
+      inputStream,
+      false
+    );
+  }
+
+  @Override
+  public InputStream getLatestBlob(String prefix) {
+    Iterable<Blob> blobIterable = () ->
+      BlobStoreHelper.listAllBlobsRecursively(storage, bucketName, prefix);
+    return StreamSupport
+      .stream(blobIterable.spliterator(), false)
+      .min(Comparator.comparing(Blob::getUpdateTime))
+      .map(blob -> getBlob(blob.getName()))
+      .orElseThrow();
+  }
+
+  @Override
+  public BlobStoreFiles listBlobStoreFiles(String prefix) {
+    return listBlobs(List.of(prefix));
+  }
+
+  private BlobStoreFiles listBlobs(Collection<String> prefixes) {
+    BlobStoreFiles blobStoreFiles = new BlobStoreFiles();
+
+    for (String prefix : prefixes) {
+      Iterator<Blob> blobIterator = BlobStoreHelper.listAllBlobsRecursively(
+        storage,
+        bucketName,
+        prefix
+      );
+      blobIterator.forEachRemaining(blob ->
+        blobStoreFiles.add(toBlobStoreFile(blob, blob.getName()))
+      );
     }
 
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
+    return blobStoreFiles;
+  }
+
+  private BlobStoreFiles.File toBlobStoreFile(Blob blob, String fileName) {
+    BlobStoreFiles.File file = new BlobStoreFiles.File(
+      fileName,
+      new Date(blob.getCreateTime()),
+      new Date(blob.getUpdateTime()),
+      blob.getSize()
+    );
+
+    if (blob.getAcl() != null) {
+      if (
+        blob
+          .getAcl()
+          .stream()
+          .anyMatch(acl ->
+            Acl.User.ofAllUsers().equals(acl.getEntity()) &&
+            acl.getRole() != null
+          )
+      ) {
+        file.setUrl(blob.getMediaLink());
+      }
     }
+    return file;
+  }
 
-    @Override
-    public boolean existBlob(String objectName) {
-        return BlobStoreHelper.existBlob(storage, bucketName, objectName);
-    }
-
-    @Override
-    public InputStream getBlob(String name) {
-        return BlobStoreHelper.getBlob(storage, bucketName, name);
-    }
-
-    @Override
-    public void uploadBlob(String name, InputStream inputStream) {
-        BlobStoreHelper.uploadBlobWithRetry(storage, bucketName, name, inputStream, false);
-    }
-
-    @Override
-    public InputStream getLatestBlob(String prefix) {
-        Iterable<Blob> blobIterable = () -> BlobStoreHelper.listAllBlobsRecursively(storage, bucketName, prefix);
-        return StreamSupport.stream(blobIterable.spliterator(), false)
-                .min(Comparator.comparing(Blob::getUpdateTime))
-                .map(blob -> getBlob(blob.getName()))
-                .orElseThrow();
-    }
-
-    @Override
-    public BlobStoreFiles listBlobStoreFiles(String prefix) {
-        return listBlobs(List.of(prefix));
-    }
-
-    private BlobStoreFiles listBlobs(Collection<String> prefixes) {
-        BlobStoreFiles blobStoreFiles = new BlobStoreFiles();
-
-
-        for (String prefix : prefixes) {
-            Iterator<Blob> blobIterator = BlobStoreHelper.listAllBlobsRecursively(storage, bucketName, prefix);
-            blobIterator.forEachRemaining(blob -> blobStoreFiles.add(toBlobStoreFile(blob, blob.getName())));
-        }
-
-        return blobStoreFiles;
-    }
-
-    private BlobStoreFiles.File toBlobStoreFile(Blob blob, String fileName) {
-        BlobStoreFiles.File file = new BlobStoreFiles.File(fileName, new Date(blob.getCreateTime()), new Date(blob.getUpdateTime()), blob.getSize());
-
-        if (blob.getAcl() != null) {
-            if (blob.getAcl().stream().anyMatch(acl -> Acl.User.ofAllUsers().equals(acl.getEntity()) && acl.getRole() != null)) {
-                file.setUrl(blob.getMediaLink());
-            }
-        }
-        return file;
-    }
-
-    @Override
-    public void copyBlob(String sourceObjectName, String targetContainerName, String targetObjectName) {
-        Storage.CopyRequest request =
-                Storage.CopyRequest.newBuilder()
-                        .setSource(BlobId.of(bucketName, sourceObjectName))
-                        .setTarget(BlobId.of(targetContainerName, targetObjectName), Collections.emptyList())
-                        .build();
-        storage.copy(request).getResult();
-    }
+  @Override
+  public void copyBlob(
+    String sourceObjectName,
+    String targetContainerName,
+    String targetObjectName
+  ) {
+    Storage.CopyRequest request = Storage.CopyRequest
+      .newBuilder()
+      .setSource(BlobId.of(bucketName, sourceObjectName))
+      .setTarget(
+        BlobId.of(targetContainerName, targetObjectName),
+        Collections.emptyList()
+      )
+      .build();
+    storage.copy(request).getResult();
+  }
 }

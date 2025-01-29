@@ -25,27 +25,34 @@ import java.io.InputStream;
  * The main implementation {@link GcsBlobStoreRepository} targets Google Cloud Storage.
  * A simple implementation {@link LocalDiskBlobStoreRepository} is available for testing in a local environment.
  */
-public sealed interface BlobStoreRepository permits GcsBlobStoreRepository, InMemoryBlobStoreRepository, LocalDiskBlobStoreRepository {
+public sealed interface BlobStoreRepository
+  permits
+    GcsBlobStoreRepository,
+    InMemoryBlobStoreRepository,
+    LocalDiskBlobStoreRepository {
+  default InputStream getLatestBlob(String prefix) {
+    throw new RuntimeException("Not implemented");
+  }
 
-    default InputStream getLatestBlob(String prefix) {
-        throw new RuntimeException("Not implemented");
-    }
+  BlobStoreFiles listBlobStoreFiles(String prefix);
 
-    BlobStoreFiles listBlobStoreFiles(String prefix);
+  boolean existBlob(String objectName);
 
-    boolean existBlob(String objectName);
+  InputStream getBlob(String objectName);
 
-    InputStream getBlob(String objectName);
+  /**
+   * Upload a blob.
+   *
+   * @param objectName  the name of the blob in GCS
+   * @param inputStream the blob data
+   */
+  void uploadBlob(String objectName, InputStream inputStream);
 
-    /**
-     * Upload a blob.
-     *
-     * @param objectName  the name of the blob in GCS
-     * @param inputStream the blob data
-     */
-    void uploadBlob(String objectName, InputStream inputStream);
+  void setBucketName(String bucketName);
 
-    void setBucketName(String bucketName);
-
-    void copyBlob(String sourceObjectName, String targetContainerName, String targetObjectName);
+  void copyBlob(
+    String sourceObjectName,
+    String targetContainerName,
+    String targetObjectName
+  );
 }

@@ -22,30 +22,37 @@ import java.io.InputStream;
 
 public abstract class BlobStoreService {
 
-    protected final BlobStoreRepository repository;
+  protected final BlobStoreRepository repository;
 
-    protected BlobStoreService(String bucketName, BlobStoreRepository repository) {
-        this.repository = repository;
-        this.repository.setBucketName(bucketName);
-    }
+  protected BlobStoreService(
+    String bucketName,
+    BlobStoreRepository repository
+  ) {
+    this.repository = repository;
+    this.repository.setBucketName(bucketName);
+  }
 
-    public InputStream getBlob(String name) {
-        return repository.getBlob(name);
-    }
+  public InputStream getBlob(String name) {
+    return repository.getBlob(name);
+  }
 
-    public BlobStoreFiles listBlobStoreFiles(String name) {
-        return repository.listBlobStoreFiles(name);
-    }
+  public BlobStoreFiles listBlobStoreFiles(String name) {
+    return repository.listBlobStoreFiles(name);
+  }
 
-    public void uploadBlob(String name, InputStream inputStream) {
-        repository.uploadBlob(name, inputStream);
-    }
+  public void uploadBlob(String name, InputStream inputStream) {
+    repository.uploadBlob(name, inputStream);
+  }
 
-    public InputStream findLatestBlob(String prefix) {
-        return repository.getLatestBlob(prefix);
-    }
+  public InputStream findLatestBlob(String prefix) {
+    return repository.getLatestBlob(prefix);
+  }
 
-    public void copyBlob(String sourceName, String targetBucket, String targetName) {
-        repository.copyBlob(sourceName, targetBucket, targetName);
-    }
+  public void copyBlob(
+    String sourceName,
+    String targetBucket,
+    String targetName
+  ) {
+    repository.copyBlob(sourceName, targetBucket, targetName);
+  }
 }
