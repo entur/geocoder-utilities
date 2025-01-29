@@ -17,6 +17,11 @@
         <opencsv.version>5.7.1</opencsv.version>
         <spring-cloud-gcp.version>3.4.1</spring-cloud-gcp.version>
         <google-guava-version>31.1-jre</google-guava-version>
+        <gitflow-maven-plugin.version>1.21.0</gitflow-maven-plugin.version>
+        <prettier-java.version>2.1.0</prettier-java.version>
+        <prettier-maven-plugin.version>0.21</prettier-maven-plugin.version>
+        <plugin.prettier.goal>write</plugin.prettier.goal>
+        <sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
     </properties>
 
     <scm>
@@ -79,4 +84,91 @@
             <version>${opencsv.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>${gitflow-maven-plugin.version}</version>
+                <configuration>
+                    <allowSnapshots>false</allowSnapshots>
+                    <verbose>true</verbose>
+                    <commitMessagePrefix>[ci skip]</commitMessagePrefix>
+                    <gitFlowConfig>
+                        <developmentBranch>master</developmentBranch>
+                        <productionBranch>master</productionBranch>
+                    </gitFlowConfig>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.hubspot.maven.plugins</groupId>
+                <artifactId>prettier-maven-plugin</artifactId>
+                <version>${prettier-maven-plugin.version}</version>
+                <configuration>
+                    <prettierJavaVersion>${prettier-java.version}</prettierJavaVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>${plugin.prettier.goal}</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>${sonar-maven-plugin.version}</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.hubspot.maven.plugins</groupId>
+                        <artifactId>prettier-maven-plugin</artifactId>
+                        <version>${prettier-maven-plugin.version}</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.hubspot.maven.plugins</groupId>
+                        <artifactId>prettier-maven-plugin</artifactId>
+                        <version>${prettier-maven-plugin.version}</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>prettierCheck</id>
+            <properties>
+                <!-- In the CI environment we want to validate that code is formatted -->
+                <plugin.prettier.goal>check</plugin.prettier.goal>
+            </properties>
+        </profile>
+    </profiles>
 </project>
