@@ -30,13 +30,6 @@
         <url>https://github.com/entur/geocoder-utilities/tree/master</url>
         <tag>HEAD</tag>
     </scm>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>entur2-snapshots</name>
-            <url>https://entur2.jfrog.io/entur2/libs-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <dependencies>
         <!-- Google Storage -->
