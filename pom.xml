@@ -13,10 +13,10 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <entur.helpers.version>1.0.70</entur.helpers.version>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-io.version>2.14.0</commons-io.version>
         <opencsv.version>5.7.1</opencsv.version>
         <spring-cloud-gcp.version>3.4.1</spring-cloud-gcp.version>
-        <google-guava-version>31.1-jre</google-guava-version>
+        <google-guava-version>32.0.0-jre</google-guava-version>
         <gitflow-maven-plugin.version>1.21.0</gitflow-maven-plugin.version>
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.21</prettier-maven-plugin.version>
