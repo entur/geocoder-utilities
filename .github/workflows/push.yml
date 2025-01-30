@@ -9,11 +9,6 @@ on:
 env:
     JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
     JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
-    SONATYPE_GPG_KEY_BASE64: ${{ secrets.SONATYPE_GPG_KEY_BASE64 }}
-    SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-    SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-    SONATYPE_GPG_KEY_PASSWORD: ${{ secrets.SONATYPE_GPG_KEY_PASSWORD }}
-    NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 jobs:
   maven-package:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -91,13 +86,4 @@ jobs:
       - name: Release to Maven Central
         run: |
           echo "Start release"
-          echo $SONATYPE_GPG_KEY_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout master
-          mvn gitflow:release-start gitflow:release-finish \
-                  -DskipTests=true \
-                  -Prelease \
-                  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                  -DpostReleaseGoals=deploy \
-                  -DargLine='-Prelease -DskipTests -s .github/workflows/settings.xml' -B -s .github/workflows/settings.xml
+          mvn deploy -s .github/workflows/settings.xml
